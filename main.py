@@ -304,23 +304,24 @@ for T in range(n + 1):
                     Uy[xsource, ysource, zsource] - Uy[xsource, ysource + 1, zsource] +
                     Uz[xsource, ysource, zsource] - Uz[xsource, ysource, zsource + 1])
 
-    if centreon == 1: 
-        P[xcentre, ycentre, zcentre] =\
-            K * c * c * rho / (h * h * h) * Q[T+1]+Pold_centre+c * c * rho * K / h * \
-            (Ux[xcentre, ycentre, zcentre]- Ux[xcentre+1, ycentre, zcentre]+Uy[xcentre, ycentre, zcentre]-
-             Uy[ xcentre, ycentre+1, zcentre]+Uz[xcentre, ycentre, zcentre]-Uz[xcentre, ycentre, zcentre+1]);
+    if centreon == 1:
+        P[xcentre, ycentre, zcentre] = \
+            K * c * c * rho / (h * h * h) * Q[T + 1] + Pold_centre + c * c * rho * K / h * \
+            (Ux[xcentre, ycentre, zcentre] - Ux[xcentre + 1, ycentre, zcentre] + Uy[xcentre, ycentre, zcentre] -
+             Uy[xcentre, ycentre + 1, zcentre] + Uz[xcentre, ycentre, zcentre] - Uz[xcentre, ycentre, zcentre + 1]);
 
     if lefton == 1:
-        P[xleft, yleft, zleft] =\
-            K * c * c * rho / (h * h * h) * Q[T+1]+Pold_left+c * c * rho * K / h * \
-            (Ux[xleft, yleft, zleft]-Ux[xleft+1, yleft, zleft]+Uy[xleft, yleft, zleft]-Uy[xleft, yleft+1, zleft]+
-             Uz[xleft, yleft, zleft]-Uz[xleft, yleft, zleft+1]);
+        P[xleft, yleft, zleft] = \
+            K * c * c * rho / (h * h * h) * Q[T + 1] + Pold_left + c * c * rho * K / h * \
+            (Ux[xleft, yleft, zleft] - Ux[xleft + 1, yleft, zleft] + Uy[xleft, yleft, zleft] - Uy[
+                xleft, yleft + 1, zleft] +
+             Uz[xleft, yleft, zleft] - Uz[xleft, yleft, zleft + 1]);
 
     if righton == 1:
-        P[xright, yright, zright] =\
+        P[xright, yright, zright] = \
             K * c * c * rho / (h * h * h) * Q[T + 1] + Pold_right + c * c * rho * K / h * \
-            (Ux[xright, yright, zright] - Ux[xright + 1, yright, zright] + Uy[xright, yright, zright] - 
-             Uy[xright,yright + 1,zright] + Uz[xright, yright, zright] - Uz[xright, yright, zright + 1])
+            (Ux[xright, yright, zright] - Ux[xright + 1, yright, zright] + Uy[xright, yright, zright] -
+             Uy[xright, yright + 1, zright] + Uz[xright, yright, zright] - Uz[xright, yright, zright + 1])
 
     if rlefton == 1 and T >= timedelay:
         P[xrleft, yrleft, zrleft] = \
@@ -401,14 +402,14 @@ for T in range(n + 1):
     # defining the mic array based on the approximate centre of the room
 
     for i in range(-2, 3):
-        for j in range(-2, 3): \
+        for j in range(-2, 3):
                 Pmicarray[3 + i, 3 + j, T + 1] = P[roomcentrex - i * a, roomcentrey - j * b, roomcentrez];
 
     if sub_room_flag == 1:
-        P_plot(1: M - 1, 1: N - 1)=P(:,:, zsource);
-        P_plot(M: M - 1 + M_sub, 1: N_sub - 1)=P_sub(:,:, zsource);
-    else
-        P_plot = P(:,:, zsource);
+        P_plot[1: M - 1, 1: N - 1]=P[:,:, zsource]
+        P_plot[M: M - 1 + M_sub, 1: N_sub - 1]=P_sub[:,:, zsource]
+    else:
+        P_plot = P[:,:, zsource]
 
     """MATLAB TIME"""
     timestamp2 = toc;
@@ -419,202 +420,166 @@ for T in range(n + 1):
     if Plot == 1:
         if chooseSingle == 1:
             P_plot = double(P_plot);
-        #
-        # figure(4)
-        # surf(P_plot);
-        # title('pressure');
-        # ylabel('x-axis');
-        # xlabel('y-axis');
-        # zlabel('amplitude')
-        #
-        # axis([0 largest_dim 0 largest_dim - 50 150]);
-        # drawnow;
-
-
+    #
+    # figure(4)
+    # surf(P_plot);
+    # title('pressure');
+    # ylabel('x-axis');
+    # xlabel('y-axis');
+    # zlabel('amplitude')
+    #
+    # axis([0 largest_dim 0 largest_dim - 50 150]);
+    # drawnow;
 
     357
     end
     358
     end
+    # No se cual es el ciclo que terminan estos dos "end"
 
     # plotting mic and source responses
-    for T in range(n+1):
-        t(T + 1) = (T * K);
+    for T in range(n + 1):
+        t[T + 1] = (T * K);
 
+    """
     figure(5)
     plot(t, Psource);
     title('Pressure at the Centre Point');
     ylabel('pressure amplitude');
     xlabel('time (s)');
     # axis([0.7 170]) grid on
-
     figure (6)
-    370 plot(t,Pmic1);
-    371 title('Pressure at the 1st mic');
-    372 ylabel('pressure amplitude');xlabel('time (s)');
-    373
-    374 figure (7)
-    375 plot(t,Pmic2);
-    376 title('Pressure at the 2nd Mic');
-    377 ylabel('pressure amplitude');xlabel('time (s)');
-    378
-    379 figure (8)
-    380 plot(t,Pmic3);
-    381 title('Pressure at the 3rd Mic');
-    382 ylabel('pressure amplitude');xlabel('time (s)');
-    383
-    384 figure (9)
-    385 plot(t,Pmic4);
-    386 title('Pressure at the 4th Mic');
-    387 ylabel('pressure amplitude');xlabel('time (s)');
-    388
-    389 Pmic1fft=1/fs*fft(Pmic1.*Pmic1,n);
-    390 figure (10)
-    391 Pmic1plot=plot(f,(abs(Pmic1fft(1:n/2+1))));
-    392 ylabel('[dB]');xlabel('Freq [Hz]');
-    393 grid on
-    394 axis ([0 50 0 1200])
-    395 set(Pmic1plot ,'linewidth',2)
-    396
-    397 Pmic1fft=1/fs*fft(Pmic1,n);
-    398 figure (100)
-    399 Pmic1plot=plot(f,(20*log10(Pmic1fft(1:n/2+1))));
-    400 %title('Frequency Response in Groh Room from a sub-woofer in the
-    corner with a 10msec pulse','FontSize',20)
-    401 ylabel('Pressure [dB]','FontSize',16);xlabel('Frequency [Hz]','
-    FontSize',16);
-    402 grid on
-    403 axis ([0 200 -50 10])
-    404 legend('Un-Smoothed'); set(Pmic1plot,'linewidth',3)
-    405
-    406 Pmic2fft=1/fs*fft(Pmic2,n);
-    407 figure (200)
-    408 Pmic2plot=plot(f,(20*log10(Pmic2fft(1:n/2+1))));
+    plot(t,Pmic1);
+    title('Pressure at the 1st mic');
+    ylabel('pressure amplitude');xlabel('time (s)');
+    figure (7)
+    plot(t,Pmic2);
+    title('Pressure at the 2nd Mic');
+    ylabel('pressure amplitude');xlabel('time (s)');
+    figure (8)
+    plot(t,Pmic3);
+    title('Pressure at the 3rd Mic');
+    ylabel('pressure amplitude');xlabel('time (s)');
+    figure (9)
+    plot(t,Pmic4);
+    title('Pressure at the 4th Mic');
+    ylabel('pressure amplitude');xlabel('time (s)');
+    Pmic1fft=1/fs*fft(Pmic1.*Pmic1,n);
+    figure (10)
+    Pmic1plot=plot(f,(abs(Pmic1fft(1:n/2+1))));
+    ylabel('[dB]');xlabel('Freq [Hz]');
+    grid on
+    axis ([0 50 0 1200])
+    set(Pmic1plot ,'linewidth',2)
+    Pmic1fft=1/fs*fft(Pmic1,n);
+    figure (100)
+    Pmic1plot=plot(f,(20*log10(Pmic1fft(1:n/2+1))));
+    # title('Frequency Response in Groh Room from a sub-woofer in the with a 10msec pulse','FontSize',20)
+    ylabel('Pressure [dB]','FontSize',16);xlabel('Frequency [Hz]','FontSize',16);
+    grid on
+    axis ([0 200 -50 10])
+    legend('Un-Smoothed'); set(Pmic1plot,'linewidth',3)
+    Pmic2fft=1/fs*fft(Pmic2,n);
+    figure (200)
+    Pmic2plot=plot(f,(20*log10(Pmic2fft(1:n/2+1))));
+    
+    # title('Frequency Response in Groh Room from a sub-woofer in the corner with a 10msec pulse','FontSize',20)
+    ylabel('Pressure [dB]','FontSize',16);xlabel('Frequency [Hz]',' FontSize',16);
+    grid on
+    axis ([0 200 -50 10])
+    legend('Un-Smoothed'); set(Pmic2plot,'linewidth',3)
+    Pmic3fft=1/fs*fft(Pmic3,n);
+    figure (300)
+    Pmic3plot=plot(f,(20*log10(Pmic3fft(1:n/2+1))));
+    # title('Frequency Response in Groh Room from a sub-woofer in the corner with a 10msec pulse','FontSize',20)
+    ylabel('Pressure [dB]','FontSize',16);xlabel('Frequency [Hz]','FontSize',16);
+    grid on
+    axis ([0 200 -50 10])
+    legend('Un-Smoothed'); set(Pmic3plot,'linewidth',3)
+    Pmic4fft=1/fs*fft(Pmic4,n);
+    figure (400)
+    Pmic4plot=plot(f,(20*log10(Pmic4fft(1:n/2+1))));
+    #title('Frequency Response in Groh Room from a sub-woofer in the corner with a 10msec pulse','FontSize',20)
+    ylabel('Pressure [dB]','FontSize',16);xlabel('Frequency [Hz]','FontSize',16);
+    grid on
+    axis ([0 200 -50 10])
+    legend('Un-Smoothed'); set(Pmic4plot,'linewidth',3)
+    """
 
-409 %title('Frequency Response in Groh Room from a sub-woofer in the corner with a 10msec pulse','FontSize',20)
-410 ylabel('Pressure [dB]','FontSize',16);xlabel('Frequency [Hz]',' FontSize',16);
-411 grid on
-412 axis ([0 200 -50 10])
-413 legend('Un-Smoothed'); set(Pmic2plot,'linewidth',3)
-414
-415 Pmic3fft=1/fs*fft(Pmic3,n);
-416 figure (300)
-417 Pmic3plot=plot(f,(20*log10(Pmic3fft(1:n/2+1))));
-418 %title('Frequency Response in Groh Room from a sub-woofer in the
-corner with a 10msec pulse','FontSize',20)
-419 ylabel('Pressure [dB]','FontSize',16);xlabel('Frequency [Hz]','
-FontSize',16);
-420 grid on
-421 axis ([0 200 -50 10])
-422 legend('Un-Smoothed'); set(Pmic3plot,'linewidth',3)
-423
-424 Pmic4fft=1/fs*fft(Pmic4,n);
-425 figure (400)
-426 Pmic4plot=plot(f,(20*log10(Pmic4fft(1:n/2+1))));
-427 %title('Frequency Response in Groh Room from a sub-woofer in the
-corner with a 10msec pulse','FontSize',20)
-428 ylabel('Pressure [dB]','FontSize',16);xlabel('Frequency [Hz]','
-FontSize',16);
-429 grid on
-430 axis ([0 200 -50 10])
-431 legend('Un-Smoothed'); set(Pmic4plot,'linewidth',3)
+    ###Johns schroeder plot
+    Pintegral = 0.002;  # change this to straighten Schroeder plot
 
-%%%Johns schroeder plot
-434 Pintegral=0.002; %change this to straighten Schroeder plot
-Pschroeder(n+1)=Pintegral;
-for i in range(1,n+1):
-    Pintegral = Psource(n + 1 - i). ^ 2 + Pintegral;
-    Pschroeder(n + 1 - i) = Pintegral;
+    Pschroeder[n + 1] = Pintegral
+    for i in range(1, n + 1):
+        Pintegral = Psource[n + 1 - i] ** 2 + Pintegral
+        Pschroeder[n + 1 - i] = Pintegral
 
-Pschroeder = 10 * log10(Pschroeder);
-figure(11)
-441 plot(t,Pschroeder);
-442 grid on
-443 title('Schroeder decay plot');
-444 ylabel('SPL [dB]');xlabel('time (s)');
-445 axis ([0 1 -20 70])
-446 %%%end of johns shroeder plot
+    Pschroeder = 10 * np.log10(Pschroeder)
+    """
+    figure(11)
+    plot(t,Pschroeder);
+    grid on
+    title('Schroeder decay plot');
+    ylabel('SPL [dB]');xlabel('time (s)');
+    axis ([0 1 -20 70])
+    """
+    ### end of johns shroeder plot
 
+    # beginning of my own reverberation method
+    """
+    figure (12)
+    Reverbtime[:,1]= t
+    Reverbtime[:,2]= 10 * np.log10(Psource**2);
+    plot(Reverbtime(:,1),Reverbtime(:,2));
+    axis([0 1 -100 40]);
+    [X Y]=findpeaks(Reverbtime(:,2));
+    Y=Y*K;
+    figure (13)
+    plot(Y,X);
+    drawnow
+    """
+    # end of my reverberation
 
-%beginning of my own reverberation method
-449 figure (12)
-450 Reverbtime(:,1)=t;
-451 Reverbtime(:,2)=10*log10(Psource.^2);
-452 plot(Reverbtime(:,1),Reverbtime(:,2));
-453 axis([0 1 -100 40]);
-454 [X Y]=findpeaks(Reverbtime(:,2));
-455 Y=Y*K;
-456
-457 figure (13)
-458 plot(Y,X);
-459 drawnow
-460 %end of my reverberation
-461
-462 fexpected=1/(pulsewidth*K)
-463 load chirp;
-464 sound(y,Fs)
+    fexpected = 1 / (pulsewidth * K)
+    load
+    chirp;
+    sound(y, Fs)
 
-"""
-figure(4)
-surf(P);
-title('pressure ');ylabel('time ');xlabel('position ');zlabel('amplitude ') toc
-"""
+    """
+    figure(4)
+    surf(P);
+    title('pressure ');ylabel('time ');xlabel('position ');zlabel('amplitude ') toc
+    """
 
-# Thisversion of  Demerit  uses constant band smoothing
+    # This version of  Demerit  uses constant band smoothing
+    # a kind of time in matlab: tic
+    # tic
+    # load 'PmicarrayGrohReference10cm' flag = 0;
+    bandwidth = 60;
+    # for now this is just the number of points.IfFres=1 then it is the bandwidth
+    cuttoff = 100;
+    # this is the cuttoff frequency where the demeritcalculation stops
+    halfbandwidth = round(bandwidth / 2);
+    realbandwidth = 2 * halfbandwidth + 1
 
-tic
-load 'PmicarrayGrohReference10cm' flag = 0;
-474
-bandwidth = 60;
-# for now this is just the number of points.IfFres=1 then it is the bandwidth
-cuttoff=100;
-#this is the cuttoff frequency where the demeritcalculation stops
-halfbandwidth=round(bandwidth / 2);
-realbandwidth=2 * halfbandwidth+1
+    for i in range(1, 6):
+        for j in range(1, 6):
+            tempequalized = Pmicarray(6 - i, 6 - j,:);
+            tempequalized = squeeze(tempequalized);
+            tempunequalized = PmicarrayGrohReference10cm(6 - i, 6 - j,:);
+            tempunequalized = squeeze(tempunequalized);
+            n1 = length(tempequalized) - 1;
+            n2 = length(tempunequalized) - 1;
 
-for i in range(1,6):
-    for j in range(1,6):
-        tempequalized = Pmicarray(6 - i, 6 - j,:);
-        tempequalized = squeeze(tempequalized);
-        tempunequalized = PmicarrayGrohReference10cm(6 - i, 6 - j,:);
-        tempunequalized = squeeze(tempunequalized);
-        n1 = length(tempequalized) - 1;
-        n2 = length(tempunequalized) - 1;
+            if n1 ~= n2:
+                return
+            else:
+                n = n1;
 
-        if n1 ~= n2:
-            return
-        else:
-            n = n1;
+            Y = 1 / fs * np.fft.fft(tempequalized, n);  # ./transpose(dQfft);
+            X = 1 / fs * np.fft.fft(tempunequalized, n);  # ./transpose(dQfft);
 
-        Y=1/fs*fft(tempequalized ,n); # ./transpose(dQfft);
-        X=1/fs*fft(tempunequalized ,n); #./transpose(dQfft);
+            flag = flag + 1;
+            f = fs / n * (0:n / 2);
 
-        flag=flag+1;
-        f=fs/n*(0:n/2);
-
-#### HASTA LINEA 492
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    #### HASTA LINEA 492
