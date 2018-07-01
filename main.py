@@ -62,7 +62,7 @@ rlefton = 1
 rrighton = 1
 subwooferon = 0
 # defining the time delay and a relative amplitude for the rear speakers
-"""Tengo dudas con esta linea también."""
+"""Tengo dudas con esta linea tambien."""
 timedelay = 130 * factor
 amp = -0.85
 amp_RearLeft = amp
@@ -82,6 +82,7 @@ Ux = np.zeros((M, N - 1, O - 1))
 Uy = np.zeros((M - 1, N, O - 1))
 Uz = np.zeros((M - 1, N - 1, O))
 
+
 """Linea para ahorrar memoria, no se si la necesitamos."""
 # if chooseSingle == 1:  # changes double arrays to single
 #     P = single(P);
@@ -96,7 +97,7 @@ Pold_centre = 0
 Pold_left = 0
 Pold_right = 0
 Pold_rleft = 0
-Pold_rleft = 0  # quizás debería ser Pold_rright
+Pold_rleft = 0  # quizas deberia ser Pold_rright
 Pold_subwoofer = 0
 
 # pre-allocating the mic array
@@ -118,7 +119,7 @@ dQ = (np.pi / pulsewidth) * np.sin(2 * np.pi * (T) / pulsewidth) * (1 - np.cos(2
 
 
 """ ChECK BOUNDARIES """
-for i in range(pulsewidth + 1 + offset, n + 1):
+for i in range(pulsewidth + 1 + offset, n - 1):
     Q[i] = 0
     dQ[i + 1] = 0
 
@@ -162,9 +163,9 @@ f = fs / n * (np.arange(n + 1) / 2)
 if sub_room_flag == 1:
     P_sub = np.zeros((M_sub, N_sub - 1, O_sub - 1))  # (M_sub, N_sub - 1, O_sub - 1);
     Ux_sub = np.zeros((M_sub, N_sub - 1, O_sub - 1))
-    Uy_sub = np.zeros((M_sub, N_sub, O_sub - 1))
+    Uy_sub = np.zeros((M_sub, N_sub - 1, O_sub - 1))
     Uz_sub = np.zeros((M_sub, N_sub - 1, O_sub))
-    Ux_subroom_old = Ux[M, 1:N_sub, :]  # original:Ux_subroom_old=Ux(M,1:N_sub -1,:);
+    Ux_subroom_old = Ux[M, 1:N_sub-1, :]  # original:Ux_subroom_old=Ux(M,1:N_sub -1,:);
     new_dimx = (M - 1 + M_sub);
     P_plot = 50 * np.ones((new_dimx, N - 1))
     # if chooseSingle == 1:  # changes double arrays to single
@@ -193,30 +194,30 @@ ysource = roomcentrey
 zsource = roomcentrez
 
 # set Centre Channel position
-xcentre = round(M / 2)
+xcentre = int(round(M / 2))
 ycentre = N - 1
-zcentre = round(O / 2)
+zcentre = int(round(O / 2))
 move = 0
 
 # set Right Channel Position
 xright = (round((M) / 4)) - move
 yright = N - 1
-zright = round(O / 2)
+zright = int(round(O / 2))
 
 # set Left Channel Position
 xleft = M - xright + move
 yleft = N - 1
-zleft = round(O / 2)
+zleft = int(round(O / 2))
 
 # set Rear-Right Channel Position
 xrright = xright
 yrright = 1
-zrright = round(O / 2)
+zrright = int(round(O / 2))
 
 # set Rear-Left Channel Position
 xrleft = xleft
 yrleft = 1
-zrleft = round(O / 2)
+zrleft = int(round(O / 2))
 
 # set Subwoofer Position
 xsubwoofer = 1
@@ -261,40 +262,40 @@ UzroofU = (rho * h - K * Z_roof) / (rho * h + K * Z_roof)
 UzroofP = 2 * K / (rho * h + K * Z_roof)
 
 # for T=0:n;
-for T in range(n + 1):
+for T in range(n-1):
     # begin velocity iterations
     # side walls
     # left hand wall
-    Ux[1, :, :] = UxleftwallU * Ux[1, :, :] - UxleftwallP * P[1, :, :];  # right hand wall
-    Ux[M, :, :] = UxrightwallU * Ux[M, :, :] + UxrightwallP * P[M - 1, :, :]
+    Ux[0, :, :] = UxleftwallU * Ux[0, :, :] - UxleftwallP * P[0, :, :];  # right hand wall
+    Ux[M - 2, :, :] = UxrightwallU * Ux[M - 2, :, :] + UxrightwallP * P[M - 2, :, :]
     if Rightside_doorway_flag == 1:
         Ux[M, widthstart: widthfinish, heightstart: heightfinish] = \
             UxdoorwayU * Ux_doorway_old + UxdoorwayP * P[M - 1, widthstart: widthfinish, heightstart: heightfinish]
         Ux_doorway_old = Ux[M, widthstart:widthfinish, heightstart: heightfinish]
     elif sub_room_flag == 1:
-        Ux[M, 1: N_sub - 1, :] = Ux_subroom_old + K / rho / h * (P[M - 1, 1: N_sub - 1, :] - P_sub[1, 1: N_sub - 1, :])
-        Ux_subroom_old = Ux[M, 1:N_sub - 1, :]
+        Ux[M, 0: N_sub - 1, :] = Ux_subroom_old + K / rho / h * (P[M - 1, 0: N_sub - 1, :] - P_sub[0, 0: N_sub - 1, :])
+        Ux_subroom_old = Ux[M, 0:N_sub - 1, :]
 
     """ diff operator: difference between adjacent elements in array. diff(X,N, dim). N: order, dim: axis
         CHECK BOUNDARIES!!
     """
     # the rest
-    Ux[2:M - 1, :, :] = Ux[2:M - 1, :, :] + K / rho / h * (-diff(P[2 - 1:M - 1, :, :], 1, 1))
+    Ux [1:M -2 ,: ,:] = Ux[1:M -2 ,: ,:] + K/rho/h*( - np.diff( P[0:M - 2 ,: ,:] ,1 ,0) )
     # front and back walls #left hand wall
-    Uy[:, 1, :] = UybackwallU * Uy[:, 1, :] - UybackwallP * P[:, 1, :]
+    Uy[:, 0, :] = UybackwallU * Uy[:, 0, :] - UybackwallP * P[:, 0, :]
     # right hand wall
-    Uy[:, N, :] = UyfrontwallU * Uy[:, N, :] + UyfrontwallP * P[:, N - 1, :]
+    Uy[:, N-2, :] = UyfrontwallU * Uy[:, N-2, :] + UyfrontwallP * P[:, N - 2, :]
     # the rest
-    Uy[:, 2: N - 1, :] = Uy[:, 2: N - 1, :] + K / rho / h * (-diff(P[:, 1:N - 1, :], 1, 2))
+    Uy[:, 1: N - 2, :] = Uy[:, 1: N - 2, :] + K / rho / h * (-np.diff(P[:, 0:N - 2, :], 1, 1))
     # roof and floor #left hand wall
-    Uz[:, :, 1] = UzfloorU * Uz[:, :, 1] - UzfloorP * P[:, :, 1]
+    Uz[:, :, 0] = UzfloorU * Uz[:, :, 0] - UzfloorP * P[:, :, 0]
     # right hand wall
-    Uz[:, :, O] = UzroofU * Uz[:, :, O] + UzroofP * P[:, :, O - 1]
+    Uz[:, :, O - 2] = UzroofU * Uz[:, :, O - 2] + UzroofP * P[:, :, O - 2]
     # the rest
-    Uz[:, :, 2: O - 1] = Uz[:, :, 2: O - 1] + K / rho / h * (-diff(P[:, :, 1:O - 1], 1, 3))
+    Uz[:, :, 1: O - 2] = Uz[:, :, 1: O - 2] + K / rho / h * (-np.diff(P[:, :, 0:O - 2], 1, 2))
 
     # now do the Pressure Matrix
-    P = P + c * c * rho * K / h * (-diff(Ux, 1, 1) - diff(Uy, 1, 2) - diff(Uz, 1, 3));
+    P = P + c * c * rho * K / h * (-np.diff(Ux, 1, 0) - np.diff(Uy, 1, 1) - np.diff(Uz, 1, 2));
 
     # this section adds in the speakers into the system with our defined Q
     if sourceon == 1:
@@ -307,21 +308,19 @@ for T in range(n + 1):
     if centreon == 1:
         P[xcentre, ycentre, zcentre] =  \
             K * c * c * rho / (h * h * h) * Q[T + 1] + Pold_centre + c * c * rho * K / h * \
-            (Ux[xcentre, ycentre, zcentre] - Ux[xcentre + 1, ycentre, zcentre] + Uy[xcentre, ycentre, zcentre] -
-             Uy[xcentre, ycentre + 1, zcentre] + Uz[xcentre, ycentre, zcentre] - Uz[xcentre, ycentre, zcentre + 1]);
+            (Ux[xcentre, ycentre, zcentre] - Ux[xcentre + 1, ycentre, zcentre] + Uy[xcentre, ycentre, zcentre] - Uy[xcentre, ycentre + 1, zcentre] + Uz[xcentre, ycentre, zcentre] - Uz[xcentre, ycentre, zcentre + 1])
 
     if lefton == 1:
-        P[xleft, yleft, zleft] = \
-            K * c * c * rho / (h * h * h) * Q[T + 1] + Pold_left + c * c * rho * K / h * \
-            (Ux[xleft, yleft, zleft] - Ux[xleft + 1, yleft, zleft] + Uy[xleft, yleft, zleft] - Uy[
-                xleft, yleft + 1, zleft] +
-             Uz[xleft, yleft, zleft] - Uz[xleft, yleft, zleft + 1]);
-
+        P[xleft-1 ,yleft-1 , zleft-1 ] =K*c*c*rho /(h*h*h) *Q[T
+        +1] + Pold_left +c*c* rho*K/h*( Ux[xleft-1 ,yleft-1 , zleft-1] -Ux[xleft , yleft-1
+        , zleft-1] +Uy[xleft-1 ,yleft-1 , zleft-1] -Uy[xleft-1 , yleft, zleft-1] +Uz[xleft -1,
+        yleft-1 , zleft-1] -Uz[xleft-1 ,yleft-1 , zleft] )
+        
     if righton == 1:
-        P[xright, yright, zright] = \
+        P[xright-1, yright-1, zright-1] = \
             K * c * c * rho / (h * h * h) * Q[T + 1] + Pold_right + c * c * rho * K / h * \
-            (Ux[xright, yright, zright] - Ux[xright + 1, yright, zright] + Uy[xright, yright, zright] -
-             Uy[xright, yright + 1, zright] + Uz[xright, yright, zright] - Uz[xright, yright, zright + 1])
+            (Ux[xright-1, yright-1, zright-1] - Ux[xright, yright-1, zright-1] + Uy[xright-1, yright-1, zright-1] -
+             Uy[xright-1, yright, zright-1] + Uz[xright-1, yright-1, zright-1] - Uz[xright-1, yright-1, zright])
 
     if rlefton == 1 and T >= timedelay:
         P[xrleft, yrleft, zrleft] = \
@@ -343,15 +342,15 @@ for T in range(n + 1):
              Uz[xsubwoofer, ysubwoofer, zsubwoofer] - Uz[xsubwoofer, ysubwoofer, zsubwoofer + 1])
 
     # grabs and stores old source term data
-    Pold_source = P(xsource, ysource, zsource);
+    Pold_source = P[xsource-1, ysource-1, zsource-1];
 
-    Pold_centre = P(xcentre, ycentre, zcentre);
-    Pold_left = P(xleft, yleft, zleft);
-    Pold_right = P(xright, yright, zright);
-    Pold_rleft = P(xrleft, yrleft, zrleft);
-    Pold_rright = P(xrright, yrright, zrright);
+    Pold_centre = P[xcentre-1, ycentre-1, zcentre-1];
+    Pold_left = P[xleft-1, yleft-1, zleft-1];
+    Pold_right = P[xright-1, yright-1, zright-1];
+    Pold_rleft = P[xrleft-1, yrleft-1, zrleft-1];
+    Pold_rright = P[xrright-1, yrright-1, zrright-1];
 
-    Pold_subwoofer = P(xsubwoofer, ysubwoofer, zsubwoofer);
+    Pold_subwoofer = P[xsubwoofer-1, ysubwoofer-1, zsubwoofer-1];
 
     if sub_room_flag == 1:
         Ux_sub[M_sub, :, :] = (rho * h - K * Z_right) / (rho * h + K * Z_right) * Ux_sub[M_sub, :, :] + 2 * K / \
@@ -393,7 +392,6 @@ for T in range(n + 1):
 
     Pmic2[T + 1] = P[15 * factor, 20 * factor, zsource]
     Pmic3[T + 1] = P[20 * factor, 15 * factor, zsource]
-    Pmic4[T + 1] = P[20 * factor, 20 * factor, zsource]
 
     # micarray
     a = 5 * factor;
@@ -403,23 +401,22 @@ for T in range(n + 1):
 
     for i in range(-2, 3):
         for j in range(-2, 3):
-                Pmicarray[3 + i, 3 + j, T + 1] = P[roomcentrex - i * a, roomcentrey - j * b, roomcentrez];
+                Pmicarray[3 + i-1, 3 + j-1, T + 1-1] = P[roomcentrex - i * a-1, roomcentrey - j * b-1, roomcentrez-1];
 
     if sub_room_flag == 1:
-        P_plot[1: M - 1, 1: N - 1]=P[:,:, zsource]
-        P_plot[M: M - 1 + M_sub, 1: N_sub - 1]=P_sub[:,:, zsource]
+        P_plot[0: M - 2, 0: N - 2]=P[:,:, zsource-1]
+        P_plot[M: M - 2 + M_sub, 0: N_sub - 2]=P_sub[:,:, zsource-1]
     else:
-        P_plot = P[:,:, zsource]
+        P_plot = P[:,:, zsource-1]
 
     """MATLAB TIME"""
-    timestamp2 = toc;
+ #   timestamp2 = toc;
     howmuchdone = T / n * 100
-    timeperiteration = (timestamp2 - timestamp1) / Plotinterval
-    timestamp1 = timestamp2
-
-    if Plot == 1:
-        if chooseSingle == 1:
-            P_plot = double(P_plot);
+ #   timeperiteration = (timestamp2 - timestamp1) / Plotinterval
+ #   timestamp1 = timestamp2
+#   if Plot == 1:
+#        if chooseSingle == 1:
+#            P_plot = double(P_plot);
     #
     # figure(4)
     # surf(P_plot);
@@ -431,15 +428,15 @@ for T in range(n + 1):
     # axis([0 largest_dim 0 largest_dim - 50 150]);
     # drawnow;
 
-    357
-    end
-    358
-    end
+ #   357
+ #   end
+ #   358
+ #   end
     # No se cual es el ciclo que terminan estos dos "end"
 
     # plotting mic and source responses
-    for T in range(n + 1):
-        t[T + 1] = (T * K);
+ #   for T in range(n + 1):
+ #       t[T + 1] = (T * K);
 
     """
     figure(5)
@@ -509,12 +506,12 @@ for T in range(n + 1):
     ###Johns schroeder plot
     Pintegral = 0.002;  # change this to straighten Schroeder plot
 
-    Pschroeder[n + 1] = Pintegral
-    for i in range(1, n + 1):
-        Pintegral = Psource[n + 1 - i] ** 2 + Pintegral
-        Pschroeder[n + 1 - i] = Pintegral
+#    Pschroeder[n + 1] = Pintegral
+#    for i in range(1, n + 1):
+#        Pintegral = Psource[n + 1 - i] ** 2 + Pintegral
+#        Pschroeder[n + 1 - i] = Pintegral
 
-    Pschroeder = 10 * np.log10(Pschroeder)
+ #   Pschroeder = 10 * np.log10(Pschroeder)
     """
     figure(11)
     plot(t,Pschroeder);
@@ -540,10 +537,10 @@ for T in range(n + 1):
     """
     # end of my reverberation
 
-    fexpected = 1 / (pulsewidth * K)
-    load
-    chirp;
-    sound(y, Fs)
+#    fexpected = 1 / (pulsewidth * K)
+#    load
+#    chirp;
+#    sound(y, Fs)
 
     """
     figure(4)
@@ -555,31 +552,31 @@ for T in range(n + 1):
     # a kind of time in matlab: tic
     # tic
     # load 'PmicarrayGrohReference10cm' flag = 0;
-    bandwidth = 60;
-    # for now this is just the number of points.IfFres=1 then it is the bandwidth
-    cuttoff = 100;
-    # this is the cuttoff frequency where the demeritcalculation stops
-    halfbandwidth = round(bandwidth / 2);
-    realbandwidth = 2 * halfbandwidth + 1
-
-    for i in range(1, 6):
-        for j in range(1, 6):
-            tempequalized = Pmicarray(6 - i, 6 - j,:);
-            tempequalized = squeeze(tempequalized);
-            tempunequalized = PmicarrayGrohReference10cm(6 - i, 6 - j,:);
-            tempunequalized = squeeze(tempunequalized);
-            n1 = length(tempequalized) - 1;
-            n2 = length(tempunequalized) - 1;
-
-            if n1 ~= n2:
-                return
-            else:
-                n = n1;
-
-            Y = 1 / fs * np.fft.fft(tempequalized, n);  # ./transpose(dQfft);
-            X = 1 / fs * np.fft.fft(tempunequalized, n);  # ./transpose(dQfft);
-
-            flag = flag + 1;
-            f = fs / n * (0:n / 2);
-
+#    bandwidth = 60;
+#    # for now this is just the number of points.IfFres=1 then it is the bandwidth
+#    cuttoff = 100;
+#    # this is the cuttoff frequency where the demeritcalculation stops
+#    halfbandwidth = round(bandwidth / 2);
+#    realbandwidth = 2 * halfbandwidth + 1
+#
+#    for i in range(1, 6):
+#        for j in range(1, 6):
+#            tempequalized = Pmicarray(6 - i, 6 - j,:);
+#            tempequalized = squeeze(tempequalized);
+#            tempunequalized = PmicarrayGrohReference10cm(6 - i, 6 - j,:);
+#            tempunequalized = squeeze(tempunequalized);
+#            n1 = length(tempequalized) - 1;
+#            n2 = length(tempunequalized) - 1;
+#
+#            if n1 ~= n2:
+#                return
+#            else:
+#                n = n1;
+#
+#            Y = 1 / fs * np.fft.fft(tempequalized, n);  # ./transpose(dQfft);
+#            X = 1 / fs * np.fft.fft(tempunequalized, n);  # ./transpose(dQfft);
+#
+#            flag = flag + 1;
+#            f = fs / n * (0:n / 2);
+#
     #### HASTA LINEA 492

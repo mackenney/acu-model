@@ -33,3 +33,4 @@ def Fx_lms(x, x_prima, y, error , w, c, mu, M):
 
 
 
+print(Fx_lms([140],[1],[1],40,np.zeros(256),np.zeros(256),0.35,256))
