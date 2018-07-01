@@ -305,7 +305,7 @@ for T in range(n + 1):
                     Uz[xsource, ysource, zsource] - Uz[xsource, ysource, zsource + 1])
 
     if centreon == 1:
-        P[xcentre, ycentre, zcentre] = \
+        P[xcentre, ycentre, zcentre] =  \
             K * c * c * rho / (h * h * h) * Q[T + 1] + Pold_centre + c * c * rho * K / h * \
             (Ux[xcentre, ycentre, zcentre] - Ux[xcentre + 1, ycentre, zcentre] + Uy[xcentre, ycentre, zcentre] -
              Uy[xcentre, ycentre + 1, zcentre] + Uz[xcentre, ycentre, zcentre] - Uz[xcentre, ycentre, zcentre + 1]);
